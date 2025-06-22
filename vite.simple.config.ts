@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 // Minimal Vite configuration for debugging
 export default defineConfig({
@@ -8,8 +8,8 @@ export default defineConfig({
     port: 3000,
     strictPort: true,
     open: true,
-    host: '0.0.0.0',
+    host: "0.0.0.0",
   },
   clearScreen: false,
-  logLevel: 'info',
+  logLevel: "info",
 });

@@ -1,32 +1,33 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { X, Users, Plus, Trash2, DollarSign } from 'lucide-react';
-import { Member } from '../types';
-import { generateGroupCode } from '../utils/analytics';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { X, Users, Plus, Trash2 } from "lucide-react";
+import { Member } from "../types";
+import { generateGroupCode } from "../utils/analytics";
 
 interface AddGroupModalProps {
   onAddGroup: (group: any) => void;
   onClose: () => void;
 }
 
-export const AddGroupModal: React.FC<AddGroupModalProps> = ({ onAddGroup, onClose }) => {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [budget, setBudget] = useState('');
-  const [currency, setCurrency] = useState('USD');
-  const [members, setMembers] = useState<Omit<Member, 'id' | 'joinedAt'>[]>([
-    { name: '', email: '' }
+export const AddGroupModal: React.FC<AddGroupModalProps> = ({
+  onAddGroup,
+  onClose,
+}) => {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [budget, setBudget] = useState("");
+  const [members, setMembers] = useState<Omit<Member, "id" | "joinedAt">[]>([
+    { name: "", email: "" },
   ]);
-
-  const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'INR'];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!name.trim() || members.filter(m => m.name.trim()).length === 0) return;
+
+    if (!name.trim() || members.filter((m) => m.name.trim()).length === 0)
+      return;
 
     const validMembers: Member[] = members
-      .filter(m => m.name.trim())
+      .filter((m) => m.name.trim())
       .map((member, index) => ({
         ...member,
         id: `member-${Date.now()}-${index}`,
@@ -38,7 +39,6 @@ export const AddGroupModal: React.FC<AddGroupModalProps> = ({ onAddGroup, onClos
       name: name.trim(),
       description: description.trim() || undefined,
       budget: budget ? parseFloat(budget) : undefined,
-      currency,
       members: validMembers,
       groupCode: generateGroupCode(),
     });
@@ -47,7 +47,7 @@ export const AddGroupModal: React.FC<AddGroupModalProps> = ({ onAddGroup, onClos
   };
 
   const addMember = () => {
-    setMembers([...members, { name: '', email: '' }]);
+    setMembers([...members, { name: "", email: "" }]);
   };
 
   const removeMember = (index: number) => {
@@ -56,10 +56,16 @@ export const AddGroupModal: React.FC<AddGroupModalProps> = ({ onAddGroup, onClos
     }
   };
 
-  const updateMember = (index: number, field: keyof Omit<Member, 'id' | 'joinedAt'>, value: string) => {
-    setMembers(members.map((member, i) => 
-      i === index ? { ...member, [field]: value } : member
-    ));
+  const updateMember = (
+    index: number,
+    field: keyof Omit<Member, "id" | "joinedAt">,
+    value: string,
+  ) => {
+    setMembers(
+      members.map((member, i) =>
+        i === index ? { ...member, [field]: value } : member,
+      ),
+    );
   };
 
   return (
@@ -73,16 +79,16 @@ export const AddGroupModal: React.FC<AddGroupModalProps> = ({ onAddGroup, onClos
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
+        className="bg-surface rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-slate-800 flex items-center space-x-2">
+          <h2 className="text-xl font-semibold text-textdark flex items-center space-x-2">
             <Users className="w-5 h-5" />
             <span>Create New Group</span>
           </h2>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 transition-colors"
+            className="text-secondary hover:text-textdark/70 transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -90,7 +96,7 @@ export const AddGroupModal: React.FC<AddGroupModalProps> = ({ onAddGroup, onClos
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-textdark/90 mb-2">
               Group Name *
             </label>
             <input
@@ -98,13 +104,13 @@ export const AddGroupModal: React.FC<AddGroupModalProps> = ({ onAddGroup, onClos
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Weekend Trip, Roommates, Office Lunch"
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl border border-surface/60 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-textdark/90 mb-2">
               Description (optional)
             </label>
             <input
@@ -112,47 +118,34 @@ export const AddGroupModal: React.FC<AddGroupModalProps> = ({ onAddGroup, onClos
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Brief description of the group"
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl border border-surface/60 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium text-textdark/90 mb-2">
                 Budget (optional)
               </label>
               <div className="relative">
-                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary">
+                  ₹
+                </span>
                 <input
                   type="number"
                   step="0.01"
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
                   placeholder="0.00"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-surface/60 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"
                 />
               </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Currency
-              </label>
-              <select
-                value={currency}
-                onChange={(e) => setCurrency(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
-              >
-                {currencies.map(curr => (
-                  <option key={curr} value={curr}>{curr}</option>
-                ))}
-              </select>
             </div>
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-3">
-              <label className="text-sm font-medium text-slate-700">
+              <label className="text-sm font-medium text-textdark/90">
                 Members *
               </label>
               <motion.button
@@ -160,7 +153,7 @@ export const AddGroupModal: React.FC<AddGroupModalProps> = ({ onAddGroup, onClos
                 whileTap={{ scale: 0.95 }}
                 type="button"
                 onClick={addMember}
-                className="bg-blue-600 hover:bg-blue-700 text-white p-1.5 rounded-lg transition-colors"
+                className="bg-primary hover:bg-accent text-white p-1.5 rounded-lg transition-colors"
               >
                 <Plus className="w-4 h-4" />
               </motion.button>
@@ -178,9 +171,11 @@ export const AddGroupModal: React.FC<AddGroupModalProps> = ({ onAddGroup, onClos
                     <input
                       type="text"
                       value={member.name}
-                      onChange={(e) => updateMember(index, 'name', e.target.value)}
+                      onChange={(e) =>
+                        updateMember(index, "name", e.target.value)
+                      }
                       placeholder="Member name"
-                      className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                      className="w-full px-3 py-2 rounded-lg border border-surface/60 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"
                       required
                     />
                   </div>
@@ -188,9 +183,11 @@ export const AddGroupModal: React.FC<AddGroupModalProps> = ({ onAddGroup, onClos
                     <input
                       type="email"
                       value={member.email}
-                      onChange={(e) => updateMember(index, 'email', e.target.value)}
+                      onChange={(e) =>
+                        updateMember(index, "email", e.target.value)
+                      }
                       placeholder="Email (optional)"
-                      className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                      className="w-full px-3 py-2 rounded-lg border border-surface/60 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"
                     />
                   </div>
                   {members.length > 1 && (
@@ -199,7 +196,7 @@ export const AddGroupModal: React.FC<AddGroupModalProps> = ({ onAddGroup, onClos
                       whileTap={{ scale: 0.9 }}
                       type="button"
                       onClick={() => removeMember(index)}
-                      className="text-red-500 hover:text-red-700 p-1"
+                      className="text-primary hover:text-accent p-1"
                     >
                       <Trash2 className="w-4 h-4" />
                     </motion.button>
@@ -209,11 +206,11 @@ export const AddGroupModal: React.FC<AddGroupModalProps> = ({ onAddGroup, onClos
             </div>
           </div>
 
-          <div className="flex space-x-3 pt-4 border-t border-slate-200">
+          <div className="flex space-x-3 pt-4 border-t border-surface/40">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-2.5 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors"
+              className="flex-1 px-6 py-2.5 border border-surface/60 text-textdark/90 rounded-xl hover:bg-surface/80 transition-colors"
             >
               Cancel
             </button>
@@ -221,8 +218,11 @@ export const AddGroupModal: React.FC<AddGroupModalProps> = ({ onAddGroup, onClos
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              className="flex-1 px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
-              disabled={!name.trim() || members.filter(m => m.name.trim()).length === 0}
+              className="flex-1 px-6 py-2.5 bg-primary text-white rounded-xl hover:bg-accent transition-colors disabled:opacity-50"
+              disabled={
+                !name.trim() ||
+                members.filter((m) => m.name.trim()).length === 0
+              }
             >
               Create Group
             </motion.button>

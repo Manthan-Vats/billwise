@@ -1,4 +1,4 @@
-import { Group, Settlement, Balance } from '../types';
+import { Group, Settlement, Balance } from "../types";
 
 // Constants for floating point precision handling
 const TOLERANCE = 0.01;
@@ -13,12 +13,14 @@ const TOLERANCE = 0.01;
 export function isValidSettlement(
   group: Group,
   balances: Balance,
-  settlement: Omit<Settlement, 'id' | 'createdAt' | 'currency' | 'description'>
+  settlement: Omit<Settlement, "id" | "createdAt" | "currency" | "description">,
 ): boolean {
   // Check if both members are part of the group
-  const fromMember = group.members.find(m => m.id === settlement.fromMemberId);
-  const toMember = group.members.find(m => m.id === settlement.toMemberId);
-  
+  const fromMember = group.members.find(
+    (m) => m.id === settlement.fromMemberId,
+  );
+  const toMember = group.members.find((m) => m.id === settlement.toMemberId);
+
   if (!fromMember || !toMember) {
     return false; // One or both members not in group
   }
@@ -31,7 +33,7 @@ export function isValidSettlement(
   // Check if the amount is within the tolerance of the actual debt
   const fromBalance = balances[settlement.fromMemberId] || 0;
   const toBalance = balances[settlement.toMemberId] || 0;
-  
+
   // The fromMember should have a negative balance (owes money)
   // The toMember should have a positive balance (is owed money)
   if (fromBalance > -TOLERANCE || toBalance < TOLERANCE) {
@@ -53,7 +55,10 @@ export function isValidSettlement(
 export function wouldBeValidSettlement(
   group: Group,
   _currentSettlements: Settlement[], // Parameter kept for backward compatibility but not used
-  newSettlement: Omit<Settlement, 'id' | 'createdAt' | 'currency' | 'description'>
+  newSettlement: Omit<
+    Settlement,
+    "id" | "createdAt" | "currency" | "description"
+  >,
 ): boolean {
   // Basic validation first
   if (newSettlement.amount <= 0) {
@@ -61,9 +66,11 @@ export function wouldBeValidSettlement(
   }
 
   // Check if both members are part of the group
-  const fromMember = group.members.find(m => m.id === newSettlement.fromMemberId);
-  const toMember = group.members.find(m => m.id === newSettlement.toMemberId);
-  
+  const fromMember = group.members.find(
+    (m) => m.id === newSettlement.fromMemberId,
+  );
+  const toMember = group.members.find((m) => m.id === newSettlement.toMemberId);
+
   if (!fromMember || !toMember) {
     return false; // One or both members not in group
   }
@@ -75,7 +82,7 @@ export function wouldBeValidSettlement(
 
   // Additional business logic can be added here
   // For example, check if the settlement makes sense given the group's history
-  
+
   return true;
 }
 
@@ -86,7 +93,7 @@ export function wouldBeValidSettlement(
 export function getMaxSettlementAmount(
   balances: Balance,
   fromMemberId: string,
-  toMemberId: string
+  toMemberId: string,
 ): number {
   const fromBalance = balances[fromMemberId] || 0;
   const toBalance = balances[toMemberId] || 0;

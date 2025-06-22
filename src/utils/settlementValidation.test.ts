@@ -1,5 +1,8 @@
-import { Group, Member, Settlement } from '../types';
-import { isValidSettlement, getMaxSettlementAmount } from './settlementValidation';
+import { Group, Member, Settlement } from "../types";
+import {
+  isValidSettlement,
+  getMaxSettlementAmount,
+} from "./settlementValidation";
 
 // Type definitions for test environment
 type DoneCallback = (error?: any) => void;
@@ -28,10 +31,14 @@ declare const expect: {
 };
 
 declare const describe: (name: string, fn: () => void) => void;
-declare const it: (name: string, fn: (done?: DoneCallback) => void, timeout?: number) => void;
+declare const it: (
+  name: string,
+  fn: (done?: DoneCallback) => void,
+  timeout?: number,
+) => void;
 declare const beforeEach: (fn: () => void, timeout?: number) => void;
 
-describe('Settlement Validation', () => {
+describe("Settlement Validation", () => {
   let group: Group;
   let member1: Member;
   let member2: Member;
@@ -39,20 +46,35 @@ describe('Settlement Validation', () => {
   let balances: Record<string, number>;
 
   beforeEach(() => {
-    member1 = { id: '1', name: 'Alice', email: 'alice@example.com', joinedAt: new Date().toISOString() };
-    member2 = { id: '2', name: 'Bob', email: 'bob@example.com', joinedAt: new Date().toISOString() };
-    member3 = { id: '3', name: 'Charlie', email: 'charlie@example.com', joinedAt: new Date().toISOString() };
+    member1 = {
+      id: "1",
+      name: "Alice",
+      email: "alice@example.com",
+      joinedAt: new Date().toISOString(),
+    };
+    member2 = {
+      id: "2",
+      name: "Bob",
+      email: "bob@example.com",
+      joinedAt: new Date().toISOString(),
+    };
+    member3 = {
+      id: "3",
+      name: "Charlie",
+      email: "charlie@example.com",
+      joinedAt: new Date().toISOString(),
+    };
 
     group = {
-      id: 'group1',
-      name: 'Test Group',
+      id: "group1",
+      name: "Test Group",
       members: [member1, member2, member3],
       expenses: [],
       settlements: [],
       createdAt: new Date().toISOString(),
       createdBy: member1.id,
-      currency: 'USD',
-      groupCode: 'ABC123',
+      currency: "USD",
+      groupCode: "ABC123",
     };
 
     // Alice is owed $50, Bob owes $30, Charlie owes $20
@@ -63,12 +85,15 @@ describe('Settlement Validation', () => {
     };
   });
 
-  describe('isValidSettlement', () => {
-    it('should validate a valid settlement', () => {
-      const settlement: Omit<Settlement, 'id' | 'createdAt' | 'currency' | 'description'> = {
+  describe("isValidSettlement", () => {
+    it("should validate a valid settlement", () => {
+      const settlement: Omit<
+        Settlement,
+        "id" | "createdAt" | "currency" | "description"
+      > = {
         groupId: group.id,
         fromMemberId: member2.id, // Bob owes
-        toMemberId: member1.id,   // Alice is owed
+        toMemberId: member1.id, // Alice is owed
         amount: 30,
       };
 
@@ -76,8 +101,11 @@ describe('Settlement Validation', () => {
       expect(result).toBe(true);
     });
 
-    it('should reject settlement with zero amount', () => {
-      const settlement: Omit<Settlement, 'id' | 'createdAt' | 'currency' | 'description'> = {
+    it("should reject settlement with zero amount", () => {
+      const settlement: Omit<
+        Settlement,
+        "id" | "createdAt" | "currency" | "description"
+      > = {
         groupId: group.id,
         fromMemberId: member2.id,
         toMemberId: member1.id,
@@ -88,8 +116,11 @@ describe('Settlement Validation', () => {
       expect(result).toBe(false);
     });
 
-    it('should reject settlement with negative amount', () => {
-      const settlement: Omit<Settlement, 'id' | 'createdAt' | 'currency' | 'description'> = {
+    it("should reject settlement with negative amount", () => {
+      const settlement: Omit<
+        Settlement,
+        "id" | "createdAt" | "currency" | "description"
+      > = {
         groupId: group.id,
         fromMemberId: member2.id,
         toMemberId: member1.id,
@@ -100,10 +131,13 @@ describe('Settlement Validation', () => {
       expect(result).toBe(false);
     });
 
-    it('should reject settlement where fromMember is not in group', () => {
-      const settlement: Omit<Settlement, 'id' | 'createdAt' | 'currency' | 'description'> = {
+    it("should reject settlement where fromMember is not in group", () => {
+      const settlement: Omit<
+        Settlement,
+        "id" | "createdAt" | "currency" | "description"
+      > = {
         groupId: group.id,
-        fromMemberId: 'nonexistent',
+        fromMemberId: "nonexistent",
         toMemberId: member1.id,
         amount: 10,
       };
@@ -112,11 +146,14 @@ describe('Settlement Validation', () => {
       expect(result).toBe(false);
     });
 
-    it('should reject settlement where toMember is not in group', () => {
-      const settlement: Omit<Settlement, 'id' | 'createdAt' | 'currency' | 'description'> = {
+    it("should reject settlement where toMember is not in group", () => {
+      const settlement: Omit<
+        Settlement,
+        "id" | "createdAt" | "currency" | "description"
+      > = {
         groupId: group.id,
         fromMemberId: member2.id,
-        toMemberId: 'nonexistent',
+        toMemberId: "nonexistent",
         amount: 10,
       };
 
@@ -124,9 +161,12 @@ describe('Settlement Validation', () => {
       expect(result).toBe(false);
     });
 
-    it('should reject settlement where fromMember does not owe money', () => {
+    it("should reject settlement where fromMember does not owe money", () => {
       // Alice is owed money, not owing
-      const settlement: Omit<Settlement, 'id' | 'createdAt' | 'currency' | 'description'> = {
+      const settlement: Omit<
+        Settlement,
+        "id" | "createdAt" | "currency" | "description"
+      > = {
         groupId: group.id,
         fromMemberId: member1.id,
         toMemberId: member2.id,
@@ -137,9 +177,12 @@ describe('Settlement Validation', () => {
       expect(result).toBe(false);
     });
 
-    it('should reject settlement where toMember is not owed money', () => {
+    it("should reject settlement where toMember is not owed money", () => {
       // Bob owes money, not being owed
-      const settlement: Omit<Settlement, 'id' | 'createdAt' | 'currency' | 'description'> = {
+      const settlement: Omit<
+        Settlement,
+        "id" | "createdAt" | "currency" | "description"
+      > = {
         groupId: group.id,
         fromMemberId: member3.id,
         toMemberId: member2.id,
@@ -150,9 +193,12 @@ describe('Settlement Validation', () => {
       expect(result).toBe(false);
     });
 
-    it('should reject settlement that exceeds what is owed', () => {
+    it("should reject settlement that exceeds what is owed", () => {
       // Bob only owes $30
-      const settlement: Omit<Settlement, 'id' | 'createdAt' | 'currency' | 'description'> = {
+      const settlement: Omit<
+        Settlement,
+        "id" | "createdAt" | "currency" | "description"
+      > = {
         groupId: group.id,
         fromMemberId: member2.id,
         toMemberId: member1.id,
@@ -164,22 +210,34 @@ describe('Settlement Validation', () => {
     });
   });
 
-  describe('getMaxSettlementAmount', () => {
-    it('should return the correct maximum settlement amount', () => {
+  describe("getMaxSettlementAmount", () => {
+    it("should return the correct maximum settlement amount", () => {
       // Bob owes $30, Alice is owed $50
-      const maxAmount = getMaxSettlementAmount(balances, member2.id, member1.id);
+      const maxAmount = getMaxSettlementAmount(
+        balances,
+        member2.id,
+        member1.id,
+      );
       expect(maxAmount).toBe(30); // Limited by what Bob owes
     });
 
-    it('should return 0 if fromMember does not owe money', () => {
+    it("should return 0 if fromMember does not owe money", () => {
       // Alice is owed money, not owing
-      const maxAmount = getMaxSettlementAmount(balances, member1.id, member2.id);
+      const maxAmount = getMaxSettlementAmount(
+        balances,
+        member1.id,
+        member2.id,
+      );
       expect(maxAmount).toBe(0);
     });
 
-    it('should return 0 if toMember is not owed money', () => {
+    it("should return 0 if toMember is not owed money", () => {
       // Bob owes money, not being owed
-      const maxAmount = getMaxSettlementAmount(balances, member3.id, member2.id);
+      const maxAmount = getMaxSettlementAmount(
+        balances,
+        member3.id,
+        member2.id,
+      );
       expect(maxAmount).toBe(0);
     });
   });

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { X, Users, Hash, UserPlus } from 'lucide-react';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { X, Users, Hash, UserPlus } from "lucide-react";
 
 interface JoinGroupModalProps {
   onJoinGroup: (groupCode: string) => void;
@@ -11,7 +11,7 @@ export const JoinGroupModal: React.FC<JoinGroupModalProps> = ({
   onJoinGroup,
   onClose,
 }) => {
-  const [groupCode, setGroupCode] = useState('');
+  const [groupCode, setGroupCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,7 +20,7 @@ export const JoinGroupModal: React.FC<JoinGroupModalProps> = ({
 
     setIsLoading(true);
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     onJoinGroup(groupCode.trim().toUpperCase());
     setIsLoading(false);
   };
@@ -36,51 +36,52 @@ export const JoinGroupModal: React.FC<JoinGroupModalProps> = ({
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-white rounded-2xl p-6 w-full max-w-md"
+        className="bg-surface rounded-2xl p-6 w-full max-w-md"
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-slate-800 flex items-center space-x-2">
+          <h2 className="text-xl font-semibold text-textdark flex items-center space-x-2">
             <UserPlus className="w-5 h-5" />
             <span>Join Group</span>
           </h2>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 transition-colors"
+            className="text-secondary hover:text-textdark/70 transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
 
         <div className="mb-6">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
+          <div className="bg-gradient-to-r from-surface/80 to-secondary/10 rounded-xl p-4 border border-primary/30">
             <div className="flex items-center space-x-3 mb-2">
-              <Users className="w-5 h-5 text-blue-600" />
-              <h3 className="font-medium text-blue-800">How to join a group</h3>
+              <Users className="w-5 h-5 text-primary" />
+              <h3 className="font-medium text-primary">How to join a group</h3>
             </div>
-            <p className="text-sm text-blue-700">
-              Ask a group member for the 6-digit group code and enter it below to join their expense group.
+            <p className="text-sm text-primary/80">
+              Ask a group member for the 6-digit group code and enter it below
+              to join their expense group.
             </p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-textdark/90 mb-2">
               Group Code
             </label>
             <div className="relative">
-              <Hash className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <Hash className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-secondary" />
               <input
                 type="text"
                 value={groupCode}
                 onChange={(e) => setGroupCode(e.target.value.toUpperCase())}
                 placeholder="ABC123"
                 maxLength={6}
-                className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-center text-lg font-mono tracking-wider"
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-surface/60 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all text-center text-lg font-mono tracking-wider"
                 required
               />
             </div>
-            <p className="text-xs text-slate-500 mt-2">
+            <p className="text-xs text-secondary mt-2">
               Enter the 6-character group code (letters and numbers)
             </p>
           </div>
@@ -89,7 +90,7 @@ export const JoinGroupModal: React.FC<JoinGroupModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors"
+              className="flex-1 px-6 py-3 border border-surface/60 text-textdark/90 rounded-xl hover:bg-surface/80 transition-colors"
             >
               Cancel
             </button>
@@ -98,10 +99,10 @@ export const JoinGroupModal: React.FC<JoinGroupModalProps> = ({
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={!groupCode.trim() || isLoading}
-              className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              className="flex-1 px-6 py-3 bg-primary hover:bg-accent text-white rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 focus:ring-2 focus:ring-accent"
             >
               {isLoading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-surface/30 border-t-surface rounded-full animate-spin" />
               ) : (
                 <>
                   <UserPlus className="w-4 h-4" />

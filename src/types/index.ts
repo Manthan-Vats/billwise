@@ -3,7 +3,7 @@ export interface User {
   name: string;
   email: string;
   avatar?: string;
-  provider: 'google';
+  provider: "google";
   createdAt: string;
 }
 
@@ -36,7 +36,7 @@ export interface Expense {
   amount: number;
   currency: string;
   paidBy: string; // member id
-  splitType: 'equal' | 'custom' | 'percentage';
+  splitType: "equal" | "custom" | "percentage";
   splits: Split[];
   category?: string;
   createdAt: string;

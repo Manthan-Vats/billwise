@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { X, DollarSign, Calendar } from 'lucide-react';
-import { Group, Split } from '../types';
+import React, { useState } from "react";
+import { X, Calendar } from "lucide-react";
+import { getCurrencySymbol } from "../utils/formatters";
+import { Group, Split } from "../types";
 
 interface AddExpenseModalProps {
   group: Group;
@@ -13,42 +14,58 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
   onAddExpense,
   onClose,
 }) => {
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
-  const [paidBy, setPaidBy] = useState(group.members[0]?.id || '');
-  const [splitType, setSplitType] = useState<'equal' | 'custom' | 'percentage'>('equal');
-  const [category, setCategory] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [customSplits, setCustomSplits] = useState<{ [key: string]: string }>({});
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState("");
+  const [paidBy, setPaidBy] = useState(group.members[0]?.id || "");
+  const [splitType, setSplitType] = useState<"equal" | "custom" | "percentage">(
+    "equal",
+  );
+  const [category, setCategory] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [customSplits, setCustomSplits] = useState<{ [key: string]: string }>(
+    {},
+  );
   const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
-    new Set(group.members.map(m => m.id))
+    new Set(group.members.map((m) => m.id)),
   );
 
-  const categories = ['food', 'transport', 'entertainment', 'utilities', 'shopping', 'accommodation', 'other'];
+  const categories = [
+    "food",
+    "transport",
+    "entertainment",
+    "utilities",
+    "shopping",
+    "accommodation",
+    "other",
+  ];
+
+  const currencySymbol = getCurrencySymbol(group.currency);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const totalAmount = parseFloat(amount);
     if (!totalAmount || !description.trim()) return;
 
-    const participatingMembers = group.members.filter(m => selectedMembers.has(m.id));
+    const participatingMembers = group.members.filter((m) =>
+      selectedMembers.has(m.id),
+    );
     let splits: Split[] = [];
 
-    if (splitType === 'equal') {
+    if (splitType === "equal") {
       const splitAmount = totalAmount / participatingMembers.length;
-      splits = participatingMembers.map(member => ({
+      splits = participatingMembers.map((member) => ({
         memberId: member.id,
         amount: splitAmount,
       }));
-    } else if (splitType === 'custom') {
-      splits = participatingMembers.map(member => ({
+    } else if (splitType === "custom") {
+      splits = participatingMembers.map((member) => ({
         memberId: member.id,
-        amount: parseFloat(customSplits[member.id] || '0'),
+        amount: parseFloat(customSplits[member.id] || "0"),
       }));
-    } else if (splitType === 'percentage') {
-      splits = participatingMembers.map(member => {
-        const percentage = parseFloat(customSplits[member.id] || '0');
+    } else if (splitType === "percentage") {
+      splits = participatingMembers.map((member) => {
+        const percentage = parseFloat(customSplits[member.id] || "0");
         return {
           memberId: member.id,
           amount: (totalAmount * percentage) / 100,
@@ -61,7 +78,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
       groupId: group.id,
       description: description.trim(),
       amount: totalAmount,
-      currency: 'USD',
+      currency: group.currency,
       paidBy,
       splitType,
       splits,
@@ -83,21 +100,29 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
   };
 
   const getTotalCustomAmount = () => {
-    return Object.values(customSplits).reduce((sum, value) => sum + (parseFloat(value) || 0), 0);
+    return Object.values(customSplits).reduce(
+      (sum, value) => sum + (parseFloat(value) || 0),
+      0,
+    );
   };
 
   const getTotalPercentage = () => {
-    return Object.values(customSplits).reduce((sum, value) => sum + (parseFloat(value) || 0), 0);
+    return Object.values(customSplits).reduce(
+      (sum, value) => sum + (parseFloat(value) || 0),
+      0,
+    );
   };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-surface rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-surface/60">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-slate-800">Add New Expense</h2>
+          <h2 className="text-xl font-semibold text-textdark">
+            Add New Expense
+          </h2>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 transition-colors"
+            className="text-secondary hover:text-textdark/70 transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -107,7 +132,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
           {/* Basic Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium text-textdark/90 mb-2">
                 Description *
               </label>
               <input
@@ -115,24 +140,26 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="What was this expense for?"
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                className="w-full px-4 py-2.5 rounded-xl border border-surface/60 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium text-textdark/90 mb-2">
                 Amount *
               </label>
               <div className="relative">
-                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary">
+                  {currencySymbol}
+                </span>
                 <input
                   type="number"
                   step="0.01"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.00"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-surface/60 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"
                   required
                 />
               </div>
@@ -141,15 +168,15 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium text-textdark/90 mb-2">
                 Paid by
               </label>
               <select
                 value={paidBy}
                 onChange={(e) => setPaidBy(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                className="w-full px-4 py-2.5 rounded-xl border border-surface/60 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"
               >
-                {group.members.map(member => (
+                {group.members.map((member) => (
                   <option key={member.id} value={member.id}>
                     {member.name}
                   </option>
@@ -158,32 +185,32 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium text-textdark/90 mb-2">
                 Date
               </label>
               <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-secondary" />
                 <input
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-surface/60 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"
                 />
               </div>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-textdark/90 mb-2">
               Category
             </label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl border border-surface/60 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"
             >
               <option value="">Select category (optional)</option>
-              {categories.map(cat => (
+              {categories.map((cat) => (
                 <option key={cat} value={cat}>
                   {cat.charAt(0).toUpperCase() + cat.slice(1)}
                 </option>
@@ -193,17 +220,17 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
 
           {/* Member Selection */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-3">
+            <label className="block text-sm font-medium text-textdark/90 mb-3">
               Who's involved?
             </label>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {group.members.map(member => (
+              {group.members.map((member) => (
                 <label
                   key={member.id}
                   className={`flex items-center space-x-2 p-3 rounded-xl cursor-pointer transition-all ${
                     selectedMembers.has(member.id)
-                      ? 'bg-blue-100 border-2 border-blue-300'
-                      : 'bg-slate-50 border border-slate-200 hover:bg-slate-100'
+                      ? "bg-blue-100 border-2 border-blue-300"
+                      : "bg-slate-50 border border-surface/40 hover:bg-slate-100"
                   }`}
                 >
                   <input
@@ -220,19 +247,19 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
 
           {/* Split Type */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-3">
+            <label className="block text-sm font-medium text-textdark/90 mb-3">
               How to split?
             </label>
             <div className="grid grid-cols-3 gap-2">
-              {(['equal', 'custom', 'percentage'] as const).map(type => (
+              {(["equal", "custom", "percentage"] as const).map((type) => (
                 <button
                   key={type}
                   type="button"
                   onClick={() => setSplitType(type)}
                   className={`p-3 rounded-xl text-sm font-medium transition-all ${
                     splitType === type
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      ? "bg-blue-600 text-white"
+                      : "bg-slate-100 text-textdark/90 hover:bg-slate-200"
                   }`}
                 >
                   {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -242,36 +269,45 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
           </div>
 
           {/* Custom Split Inputs */}
-          {splitType !== 'equal' && (
+          {splitType !== "equal" && (
             <div>
-              <h4 className="text-sm font-medium text-slate-700 mb-3">
-                {splitType === 'custom' ? 'Custom amounts' : 'Percentages'}
+              <h4 className="text-sm font-medium text-textdark/90 mb-3">
+                {splitType === "custom" ? "Custom amounts" : "Percentages"}
               </h4>
               <div className="space-y-2">
                 {group.members
-                  .filter(m => selectedMembers.has(m.id))
-                  .map(member => (
-                    <div key={member.id} className="flex items-center space-x-3">
-                      <span className="w-24 text-sm font-medium text-slate-700">
+                  .filter((m) => selectedMembers.has(m.id))
+                  .map((member) => (
+                    <div
+                      key={member.id}
+                      className="flex items-center space-x-3"
+                    >
+                      <span className="w-24 text-sm font-medium text-textdark/90">
                         {member.name}
                       </span>
                       <div className="flex-1 relative">
-                        {splitType === 'custom' && (
-                          <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        {splitType === "custom" && (
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary">
+                            {currencySymbol}
+                          </span>
                         )}
                         <input
                           type="number"
                           step="0.01"
-                          value={customSplits[member.id] || ''}
-                          onChange={(e) => setCustomSplits(prev => ({
-                            ...prev,
-                            [member.id]: e.target.value
-                          }))}
-                          placeholder={splitType === 'custom' ? '0.00' : '0'}
-                          className={`w-full ${splitType === 'custom' ? 'pl-10' : 'pl-4'} pr-4 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all`}
+                          value={customSplits[member.id] || ""}
+                          onChange={(e) =>
+                            setCustomSplits((prev) => ({
+                              ...prev,
+                              [member.id]: e.target.value,
+                            }))
+                          }
+                          placeholder={splitType === "custom" ? "0.00" : "0"}
+                          className={`w-full ${splitType === "custom" ? "pl-10" : "pl-4"} pr-4 py-2 rounded-lg border border-surface/60 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all`}
                         />
-                        {splitType === 'percentage' && (
-                          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400">%</span>
+                        {splitType === "percentage" && (
+                          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-secondary">
+                            %
+                          </span>
                         )}
                       </div>
                     </div>
@@ -279,22 +315,28 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
               </div>
 
               {/* Validation */}
-              {splitType === 'custom' && amount && (
-                <div className={`text-sm mt-2 ${
-                  Math.abs(getTotalCustomAmount() - parseFloat(amount)) < 0.01
-                    ? 'text-green-600'
-                    : 'text-red-600'
-                }`}>
-                  Total: ${getTotalCustomAmount().toFixed(2)} / ${parseFloat(amount).toFixed(2)}
+              {splitType === "custom" && amount && (
+                <div
+                  className={`text-sm mt-2 ${
+                    Math.abs(getTotalCustomAmount() - parseFloat(amount)) < 0.01
+                      ? "text-secondary"
+                      : "text-primary"
+                  }`}
+                >
+                  Total: {currencySymbol}
+                  {getTotalCustomAmount().toFixed(2)} / {currencySymbol}
+                  {parseFloat(amount).toFixed(2)}
                 </div>
               )}
 
-              {splitType === 'percentage' && (
-                <div className={`text-sm mt-2 ${
-                  Math.abs(getTotalPercentage() - 100) < 0.1
-                    ? 'text-green-600'
-                    : 'text-red-600'
-                }`}>
+              {splitType === "percentage" && (
+                <div
+                  className={`text-sm mt-2 ${
+                    Math.abs(getTotalPercentage() - 100) < 0.1
+                      ? "text-secondary"
+                      : "text-primary"
+                  }`}
+                >
                   Total: {getTotalPercentage().toFixed(1)}% / 100%
                 </div>
               )}
@@ -302,23 +344,26 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
           )}
 
           {/* Actions */}
-          <div className="flex space-x-3 pt-4 border-t border-slate-200">
+          <div className="flex space-x-3 pt-4 border-t border-surface/40">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-2.5 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors"
+              className="flex-1 px-6 py-2.5 border-2 border-primary/60 text-textdark/90 rounded-xl hover:bg-primary/10 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="flex-1 px-6 py-2.5 bg-primary text-white rounded-xl hover:bg-accent transition-colors disabled:opacity-50"
               disabled={
                 !description.trim() ||
                 !amount ||
                 selectedMembers.size === 0 ||
-                (splitType === 'custom' && Math.abs(getTotalCustomAmount() - parseFloat(amount || '0')) > 0.01) ||
-                (splitType === 'percentage' && Math.abs(getTotalPercentage() - 100) > 0.1)
+                (splitType === "custom" &&
+                  Math.abs(getTotalCustomAmount() - parseFloat(amount || "0")) >
+                    0.01) ||
+                (splitType === "percentage" &&
+                  Math.abs(getTotalPercentage() - 100) > 0.1)
               }
             >
               Add Expense

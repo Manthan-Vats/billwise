@@ -1,4 +1,4 @@
-import { Group, Expense, Settlement, Balance, SimplifiedDebt } from '../types';
+import { Group, Expense, Settlement, Balance, SimplifiedDebt } from "../types";
 
 // Constants for floating point precision handling
 const TOLERANCE = 0.01;
@@ -7,36 +7,44 @@ const roundToCents = (amount: number): number => Math.round(amount * 100) / 100;
 export function calculateBalances(
   group: Group,
   expenses: Expense[],
-  settlements: Settlement[]
+  settlements: Settlement[],
 ): Balance {
   const balances: Balance = {};
 
   // Initialize balances for all members
-  group.members.forEach(member => {
+  group.members.forEach((member) => {
     balances[member.id] = 0;
   });
 
   // Process expenses
-  expenses.forEach(expense => {
+  expenses.forEach((expense) => {
     // The person who paid gets credited the full amount
-    balances[expense.paidBy] = roundToCents(balances[expense.paidBy] + expense.amount);
+    balances[expense.paidBy] = roundToCents(
+      balances[expense.paidBy] + expense.amount,
+    );
 
     // Each person in the split gets debited their share
-    expense.splits.forEach(split => {
-      balances[split.memberId] = roundToCents(balances[split.memberId] - split.amount);
+    expense.splits.forEach((split) => {
+      balances[split.memberId] = roundToCents(
+        balances[split.memberId] - split.amount,
+      );
     });
   });
 
   // Process settlements (these are already accounted for in the balances)
   // No need to process them again as they're already reflected in the current balances
   // Apply settlements to adjust balances
-  settlements.forEach(settlement => {
-    balances[settlement.fromMemberId] = roundToCents(balances[settlement.fromMemberId] + settlement.amount);
-    balances[settlement.toMemberId] = roundToCents(balances[settlement.toMemberId] - settlement.amount);
+  settlements.forEach((settlement) => {
+    balances[settlement.fromMemberId] = roundToCents(
+      balances[settlement.fromMemberId] + settlement.amount,
+    );
+    balances[settlement.toMemberId] = roundToCents(
+      balances[settlement.toMemberId] - settlement.amount,
+    );
   });
 
   // Zero-out floating residues
-  Object.keys(balances).forEach(id => {
+  Object.keys(balances).forEach((id) => {
     if (Math.abs(balances[id]) < TOLERANCE) {
       balances[id] = 0;
     }
@@ -100,11 +108,13 @@ export function simplifyDebts(balances: Balance): SimplifiedDebt[] {
 export function advancedSimplifyDebts(balances: Balance): SimplifiedDebt[] {
   const members = Object.keys(balances);
   const n = members.length;
-  
+
   // Create adjacency matrix for debts
-  const debtMatrix: number[][] = Array(n).fill(0).map(() => Array(n).fill(0));
+  const debtMatrix: number[][] = Array(n)
+    .fill(0)
+    .map(() => Array(n).fill(0));
   const memberIndexMap: { [key: string]: number } = {};
-  
+
   members.forEach((memberId, index) => {
     memberIndexMap[memberId] = index;
   });
@@ -112,7 +122,7 @@ export function advancedSimplifyDebts(balances: Balance): SimplifiedDebt[] {
   // Fill initial debts based on balances
   const creditors: number[] = [];
   const debtors: number[] = [];
-  
+
   members.forEach((memberId, index) => {
     const balance = balances[memberId];
     if (balance > 0.01) {
@@ -128,12 +138,12 @@ export function advancedSimplifyDebts(balances: Balance): SimplifiedDebt[] {
   while (creditors.length > 0 && debtors.length > 0) {
     const creditorIndex = creditors[0];
     const debtorIndex = debtors[0];
-    
+
     const creditorBalance = balances[members[creditorIndex]];
     const debtorBalance = Math.abs(balances[members[debtorIndex]]);
-    
+
     const settleAmount = Math.min(creditorBalance, debtorBalance);
-    
+
     simplifiedDebts.push({
       fromMemberId: members[debtorIndex],
       toMemberId: members[creditorIndex],

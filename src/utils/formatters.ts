@@ -1,7 +1,8 @@
-export function formatCurrency(amount: number, currency: string = 'USD'): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency,
+// BillWise now supports only Indian Rupees. Currency param retained for backward-compat but ignored.
+export function formatCurrency(amount: number, _currency?: string): string {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
@@ -10,19 +11,21 @@ export function formatCurrency(amount: number, currency: string = 'USD'): string
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
   const now = new Date();
-  const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+  const diffInDays = Math.floor(
+    (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
+  );
 
   if (diffInDays === 0) {
-    return 'Today';
+    return "Today";
   } else if (diffInDays === 1) {
-    return 'Yesterday';
+    return "Yesterday";
   } else if (diffInDays < 7) {
     return `${diffInDays} days ago`;
   } else {
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
     });
   }
 }
@@ -36,7 +39,7 @@ export function formatRelativeTime(dateString: string): string {
   const diffInDays = Math.floor(diffInHours / 24);
 
   if (diffInMinutes < 1) {
-    return 'Just now';
+    return "Just now";
   } else if (diffInMinutes < 60) {
     return `${diffInMinutes}m ago`;
   } else if (diffInHours < 24) {
@@ -52,8 +55,12 @@ export function formatPercentage(value: number, decimals: number = 1): string {
   return `${value.toFixed(decimals)}%`;
 }
 
+export function getCurrencySymbol(_currency?: string): string {
+  return "₹";
+}
+
 export function formatNumber(value: number, decimals: number = 2): string {
-  return value.toLocaleString('en-US', {
+  return value.toLocaleString("en-US", {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   });

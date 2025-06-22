@@ -1,21 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Header } from './components/Header';
-import { AuthPage } from './components/AuthPage';
-import { GroupSelector } from './components/GroupSelector';
-import { ExpenseList } from './components/ExpenseList';
-import { BalancesView } from './components/BalancesView';
-import { GroupDashboard } from './components/GroupDashboard';
-import { AddExpenseModal } from './components/AddExpenseModal';
-import { AddGroupModal } from './components/AddGroupModal';
-import { JoinGroupModal } from './components/JoinGroupModal';
-import { ManageMembersModal } from './components/ManageMembersModal';
-import { SettleUpModal } from './components/SettleUpModal';
-import { Footer } from './components/Footer';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { Group, Expense, Settlement } from './types';
-import { calculateBalances, simplifyDebts } from './utils/debtSimplification';
-import { calculateGroupAnalytics } from './utils/analytics';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Users } from "lucide-react";
+import { Header } from "./components/Header";
+import { AuthPage } from "./components/AuthPage";
+import { GroupSelector } from "./components/GroupSelector";
+import { ExpenseList } from "./components/ExpenseList";
+import { BalancesView } from "./components/BalancesView";
+import { GroupDashboard } from "./components/GroupDashboard";
+import { AddExpenseModal } from "./components/AddExpenseModal";
+import { AddGroupModal } from "./components/AddGroupModal";
+import { JoinGroupModal } from "./components/JoinGroupModal";
+import { ManageMembersModal } from "./components/ManageMembersModal";
+import { SettleUpModal } from "./components/SettleUpModal";
+import { Footer } from "./components/Footer";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { Group, Expense, Settlement } from "./types";
+import { calculateBalances, simplifyDebts } from "./utils/debtSimplification";
+import { calculateGroupAnalytics } from "./utils/analytics";
 
 function AppContent() {
   const { user, isLoading } = useAuth();
@@ -28,15 +29,17 @@ function AppContent() {
   const [showJoinGroup, setShowJoinGroup] = useState(false);
   const [showManageMembers, setShowManageMembers] = useState(false);
   const [showSettleUp, setShowSettleUp] = useState(false);
-  const [activeTab, setActiveTab] = useState<'expenses' | 'balances' | 'dashboard'>('expenses');
+  const [activeTab, setActiveTab] = useState<
+    "expenses" | "balances" | "dashboard"
+  >("expenses");
 
   // Load data from localStorage on mount
   useEffect(() => {
     if (!user) return;
 
-    const savedGroups = localStorage.getItem('expense-groups');
-    const savedExpenses = localStorage.getItem('expense-expenses');
-    const savedSettlements = localStorage.getItem('expense-settlements');
+    const savedGroups = localStorage.getItem("expense-groups");
+    const savedExpenses = localStorage.getItem("expense-expenses");
+    const savedSettlements = localStorage.getItem("expense-settlements");
 
     if (savedGroups) {
       const parsedGroups = JSON.parse(savedGroups);
@@ -52,17 +55,17 @@ function AppContent() {
   // Save data to localStorage whenever state changes
   useEffect(() => {
     if (!user) return;
-    localStorage.setItem('expense-groups', JSON.stringify(groups));
+    localStorage.setItem("expense-groups", JSON.stringify(groups));
   }, [groups, user]);
 
   useEffect(() => {
     if (!user) return;
-    localStorage.setItem('expense-expenses', JSON.stringify(expenses));
+    localStorage.setItem("expense-expenses", JSON.stringify(expenses));
   }, [expenses, user]);
 
   useEffect(() => {
     if (!user) return;
-    localStorage.setItem('expense-settlements', JSON.stringify(settlements));
+    localStorage.setItem("expense-settlements", JSON.stringify(settlements));
   }, [settlements, user]);
 
   if (isLoading) {
@@ -81,86 +84,116 @@ function AppContent() {
     return <AuthPage />;
   }
 
-  const selectedGroup = groups.find(g => g.id === selectedGroupId);
-  const groupExpenses = expenses.filter(e => e.groupId === selectedGroupId);
-  const groupSettlements = settlements.filter(s => s.groupId === selectedGroupId);
+  const selectedGroup = groups.find((g) => g.id === selectedGroupId);
+  const groupExpenses = expenses.filter((e) => e.groupId === selectedGroupId);
+  const groupSettlements = settlements.filter(
+    (s) => s.groupId === selectedGroupId,
+  );
 
-  const balances = selectedGroup ? calculateBalances(selectedGroup, groupExpenses, groupSettlements) : {};
+  const balances = selectedGroup
+    ? calculateBalances(selectedGroup, groupExpenses, groupSettlements)
+    : {};
   const simplifiedDebts = selectedGroup ? simplifyDebts(balances) : [];
-  const analytics = selectedGroup ? calculateGroupAnalytics(selectedGroup, groupExpenses) : null;
+  const analytics = selectedGroup
+    ? calculateGroupAnalytics(selectedGroup, groupExpenses)
+    : null;
 
-  const addGroup = (group: Omit<Group, 'id' | 'createdAt' | 'createdBy'>) => {
+  const addGroup = (
+    group: Omit<
+      Group,
+      "id" | "createdAt" | "createdBy" | "expenses" | "settlements"
+    >,
+  ) => {
+    if (!user) return;
     const newGroup: Group = {
       ...group,
-      id: Date.now().toString(),
+      id: `group_${Date.now()}`,
+      expenses: [],
+      settlements: [],
       createdAt: new Date().toISOString(),
       createdBy: user.id,
-      currency: group.currency || 'USD',
+      members: [
+        ...group.members,
+        {
+          id: user.id,
+          name: (user as any).user_metadata?.full_name || user.email || "Admin",
+          joinedAt: new Date().toISOString(),
+        },
+      ],
     };
-    setGroups(prev => [...prev, newGroup]);
+    const updatedGroups = [...groups, newGroup];
+    setGroups(updatedGroups);
     setSelectedGroupId(newGroup.id);
+    localStorage.setItem("expense-groups", JSON.stringify(updatedGroups));
   };
 
   const joinGroup = (groupCode: string) => {
     // In a real app, this would make an API call to find the group by code
     // For demo purposes, we'll create a mock group
+    if (!user) return;
     const mockGroup: Group = {
       id: Date.now().toString(),
       name: `Group ${groupCode}`,
-      description: 'Joined group',
+      description: "Joined group",
       members: [
         {
           id: user.id,
-          name: user.name,
+          name: (user as any).user_metadata?.full_name || user.email || "Admin",
           email: user.email,
           joinedAt: new Date().toISOString(),
-        }
+        },
       ],
+      expenses: [],
+      settlements: [],
       createdAt: new Date().toISOString(),
-      createdBy: 'other-user',
-      currency: 'USD',
+      createdBy: "other-user",
+      currency: "USD",
       groupCode,
     };
-    setGroups(prev => [...prev, mockGroup]);
+    setGroups((prev) => [...prev, mockGroup]);
     setSelectedGroupId(mockGroup.id);
   };
 
   const updateGroup = (groupId: string, updates: Partial<Group>) => {
-    setGroups(prev => prev.map(g => g.id === groupId ? { ...g, ...updates } : g));
+    setGroups((prev) =>
+      prev.map((g) => (g.id === groupId ? { ...g, ...updates } : g)),
+    );
   };
 
   const deleteGroup = (groupId: string) => {
-    setGroups(prev => prev.filter(g => g.id !== groupId));
-    setExpenses(prev => prev.filter(e => e.groupId !== groupId));
-    setSettlements(prev => prev.filter(s => s.groupId !== groupId));
+    setGroups((prev) => prev.filter((g) => g.id !== groupId));
+    setExpenses((prev) => prev.filter((e) => e.groupId !== groupId));
+    setSettlements((prev) => prev.filter((s) => s.groupId !== groupId));
     if (selectedGroupId === groupId) {
-      const remainingGroups = groups.filter(g => g.id !== groupId);
-      setSelectedGroupId(remainingGroups.length > 0 ? remainingGroups[0].id : null);
+      const remainingGroups = groups.filter((g) => g.id !== groupId);
+      setSelectedGroupId(
+        remainingGroups.length > 0 ? remainingGroups[0].id : null,
+      );
     }
   };
 
-  const addExpense = (expense: Omit<Expense, 'id' | 'createdAt'>) => {
+  const addExpense = (expense: Omit<Expense, "id" | "createdAt">) => {
     const newExpense: Expense = {
       ...expense,
       id: Date.now().toString(),
       createdAt: new Date().toISOString(),
     };
-    setExpenses(prev => [...prev, newExpense]);
+    setExpenses((prev) => [...prev, newExpense]);
   };
 
-  const addSettlement = (settlement: Omit<Settlement, 'id' | 'createdAt'>) => {
+  const addSettlement = (settlement: Omit<Settlement, "id" | "createdAt">) => {
     const newSettlement: Settlement = {
       ...settlement,
       id: Date.now().toString(),
       createdAt: new Date().toISOString(),
     };
-    setSettlements(prev => [...prev, newSettlement]);
+    setSettlements((prev) => [...prev, newSettlement]);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-surface font-sans">
       <Header />
-      
+
       <main className="max-w-6xl mx-auto px-4 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -174,7 +207,7 @@ function AppContent() {
             onAddGroup={() => setShowAddGroup(true)}
             onJoinGroup={() => setShowJoinGroup(true)}
             onDeleteGroup={deleteGroup}
-            onViewDashboard={() => setActiveTab('dashboard')}
+            onViewDashboard={() => setActiveTab("dashboard")}
             activeView={activeTab}
           />
         </motion.div>
@@ -192,7 +225,7 @@ function AppContent() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setShowAddExpense(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-200 hover:shadow-lg"
+                className="bg-primary hover:bg-accent text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg"
               >
                 Add Expense
               </motion.button>
@@ -200,7 +233,7 @@ function AppContent() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setShowManageMembers(true)}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-200 hover:shadow-lg"
+                className="bg-secondary hover:bg-secondary/80 text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg"
               >
                 Manage Members
               </motion.button>
@@ -208,7 +241,7 @@ function AppContent() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setShowSettleUp(true)}
-                className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-200 hover:shadow-lg disabled:opacity-50"
+                className="bg-tertiary hover:bg-tertiary/80 text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg disabled:opacity-50"
                 disabled={simplifiedDebts.length === 0}
               >
                 Settle Up
@@ -220,24 +253,27 @@ function AppContent() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white/60 backdrop-blur-sm rounded-2xl p-1.5"
+              className="bg-surface/60 backdrop-blur-sm rounded-2xl p-1.5 flex justify-center"
             >
-              <div className="flex space-x-1">
-                {(['expenses', 'balances', 'dashboard'] as const).map((tab) => (
-                  <motion.button
-                    key={tab}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setActiveTab(tab)}
-                    className={`flex-1 py-2.5 px-4 rounded-xl font-medium transition-all duration-200 ${
-                      activeTab === tab
-                        ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-slate-600 hover:text-slate-800'
-                    }`}
-                  >
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                  </motion.button>
-                ))}
+              <div className="flex justify-center mt-6 gap-4 flex-wrap">
+                <button
+                  onClick={() => setActiveTab("expenses")}
+                  className={`min-w-[120px] px-6 py-3 rounded-xl font-semibold transition-all duration-200 border ${activeTab === 'expenses' ? 'bg-persian text-white shadow-lg' : 'text-charcoal border-saffron hover:bg-saffron/20'}`}
+                >
+                  Expenses
+                </button>
+                <button
+                  onClick={() => setActiveTab("balances")}
+                  className={`min-w-[120px] px-6 py-3 rounded-xl font-semibold transition-all duration-200 border ${activeTab === 'balances' ? 'bg-persian text-white shadow-lg' : 'text-charcoal border-saffron hover:bg-saffron/20'}`}
+                >
+                  Balances
+                </button>
+                <button
+                  onClick={() => setActiveTab("dashboard")}
+                  className={`min-w-[120px] px-6 py-3 rounded-xl font-semibold transition-all duration-200 border ${activeTab === 'dashboard' ? 'bg-persian text-white shadow-lg' : 'text-charcoal border-saffron hover:bg-saffron/20'}`}
+                >
+                  Dashboard
+                </button>
               </div>
             </motion.div>
 
@@ -250,17 +286,17 @@ function AppContent() {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                {activeTab === 'expenses' && (
+                {activeTab === "expenses" && (
                   <ExpenseList expenses={groupExpenses} group={selectedGroup} />
                 )}
-                {activeTab === 'balances' && (
+                {activeTab === "balances" && (
                   <BalancesView
                     balances={balances}
                     simplifiedDebts={simplifiedDebts}
                     group={selectedGroup}
                   />
                 )}
-                {activeTab === 'dashboard' && analytics && (
+                {activeTab === "dashboard" && analytics && (
                   <GroupDashboard group={selectedGroup} analytics={analytics} />
                 )}
               </motion.div>
@@ -270,32 +306,30 @@ function AppContent() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center py-16"
+            transition={{ duration: 0.5 }}
+            className="text-center p-10 bg-surface/60 backdrop-blur-sm rounded-2xl border border-surface/20"
           >
-            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 max-w-md mx-auto">
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4"
+            <Users className="w-16 h-16 mx-auto text-secondary mb-4" />
+            <h2 className="text-2xl font-bold text-textdark mb-2">
+              No Group Selected
+            </h2>
+            <p className="text-textdark/80 mb-6">
+              Create a new group or join an existing one to start tracking
+              expenses.
+            </p>
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={() => setShowAddGroup(true)}
+                className="flex-1 bg-primary hover:bg-accent text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg"
               >
-                <span className="text-2xl">💰</span>
-              </motion.div>
-              <h2 className="text-xl font-semibold text-slate-700 mb-3">No Groups Yet</h2>
-              <p className="text-slate-600 mb-6">Create your first expense group or join an existing one to get started!</p>
-              <div className="flex space-x-3">
-                <button
-                  onClick={() => setShowAddGroup(true)}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg"
-                >
-                  Create Group
-                </button>
-                <button
-                  onClick={() => setShowJoinGroup(true)}
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg"
-                >
-                  Join Group
-                </button>
-              </div>
+                Create Group
+              </button>
+              <button
+                onClick={() => setShowJoinGroup(true)}
+                className="flex-1 bg-secondary hover:bg-brandHeader text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg"
+              >
+                Join Group
+              </button>
             </div>
           </motion.div>
         )}

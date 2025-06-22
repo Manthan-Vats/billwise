@@ -33,4 +33,5 @@ VITE_SUPABASE_ANON_KEY=…
 ```
 
 ---
+
 MIT License © 2024 Manthan

@@ -40,7 +40,7 @@ export const AuthPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex">
+    <div className="min-h-screen bg-radial-cream flex">
       {/* Left Side - Features */}
       <div className="hidden lg:flex lg:w-1/2 p-12 flex-col justify-center">
         <motion.div
@@ -52,7 +52,7 @@ export const AuthPage: React.FC = () => {
             <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-3 rounded-xl">
               <Calculator className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-saffron via-sandy to-persian bg-clip-text text-transparent">
               BillWise
             </h1>
           </div>
@@ -102,7 +102,7 @@ export const AuthPage: React.FC = () => {
               <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-3 rounded-xl">
                 <Calculator className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-saffron via-sandy to-persian bg-clip-text text-transparent">
                 BillWise
               </h1>
             </div>
@@ -124,7 +124,7 @@ export const AuthPage: React.FC = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleGoogleAuth}
-              className="w-full bg-white border-2 border-slate-200 hover:border-blue-300 text-slate-700 font-medium py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center space-x-3 shadow-sm hover:shadow-md"
+              className="w-full bg-white border-2 border-persian hover:border-persian/80 text-slate-700 font-medium py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center space-x-3 shadow-sm hover:shadow-md focus:border-persian focus:ring-2 focus:ring-persian/30"
             >
               <img 
                 src="https://developers.google.com/identity/images/g-logo.png" 
@@ -163,20 +163,6 @@ export const AuthPage: React.FC = () => {
               </div>
             </div>
           </div>
-
-          {/* Demo Notice */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1 }}
-            className="mt-6 text-center"
-          >
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-              <p className="text-sm text-blue-800">
-                <strong>Demo Mode:</strong> Click "Continue with Google" to try the app with sample data.
-              </p>
-            </div>
-          </motion.div>
         </motion.div>
       </div>
     </div>
