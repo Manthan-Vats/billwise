@@ -18,13 +18,13 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({
 
   const getCategoryColor = (category?: string) => {
     const colors = {
-      food: "bg-accent/10 text-accent",
-      transport: "bg-secondary/20 text-secondary",
-      entertainment: "bg-primary/10 text-primary",
-      utilities: "bg-brandHeader/20 text-brandHeader",
-      shopping: "bg-secondary/30 text-secondary/90",
-      accommodation: "bg-primary/20 text-primary/90",
-      default: "bg-surface text-textdark",
+      food: "bg-accent/20 text-accent",
+      transport: "bg-secondary/30 text-secondary",
+      entertainment: "bg-primary/20 text-primary",
+      utilities: "bg-sienna/20 text-sienna",
+      shopping: "bg-primary/10 text-primary/90",
+      accommodation: "bg-secondary/20 text-secondary/90",
+      default: "bg-surface/70 text-textdark",
     };
     return colors[category as keyof typeof colors] || colors.default;
   };

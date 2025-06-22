@@ -71,9 +71,9 @@ export const GroupSelector: React.FC<GroupSelectorProps> = ({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200"
+            className="bg-surface/60 backdrop-blur-sm rounded-xl p-6 border border-surface/30"
           >
-            <Users className="w-12 h-12 text-blue-400 mx-auto mb-3" />
+            <Users className="w-12 h-12 text-primary mx-auto mb-3" />
             <h3 className="font-medium text-textdark/90 mb-2">No groups yet</h3>
             <p className="text-sm text-secondary mb-4">
               Create your first group or join an existing one
@@ -81,13 +81,13 @@ export const GroupSelector: React.FC<GroupSelectorProps> = ({
             <div className="flex space-x-2 justify-center">
               <button
                 onClick={onAddGroup}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+                className="bg-primary hover:bg-accent text-white px-4 py-2 rounded-lg text-sm transition-colors"
               >
                 Create Group
               </button>
               <button
                 onClick={onJoinGroup}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+                className="bg-secondary hover:bg-secondary/90 text-white px-4 py-2 rounded-lg text-sm transition-colors"
               >
                 Join Group
               </button>

@@ -241,7 +241,7 @@ function AppContent() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setShowSettleUp(true)}
-                className="bg-tertiary hover:bg-tertiary/80 text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg disabled:opacity-50"
+                className="bg-accent hover:bg-accent/90 text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg disabled:bg-accent/20 disabled:text-accent/80 disabled:border-accent/60 disabled:cursor-not-allowed disabled:opacity-100 border"
                 disabled={simplifiedDebts.length === 0}
               >
                 Settle Up
@@ -258,19 +258,19 @@ function AppContent() {
               <div className="flex justify-center mt-6 gap-4 flex-wrap">
                 <button
                   onClick={() => setActiveTab("expenses")}
-                  className={`min-w-[120px] px-6 py-3 rounded-xl font-semibold transition-all duration-200 border ${activeTab === 'expenses' ? 'bg-persian text-white shadow-lg' : 'text-charcoal border-saffron hover:bg-saffron/20'}`}
+                  className={`min-w-[120px] px-6 py-3 rounded-xl font-medium transition-colors duration-200 border ${activeTab === 'expenses' ? 'bg-primary text-white shadow-lg' : 'text-primary border-primary/40 hover:bg-primary/10 focus:ring-2 focus:ring-primary/30'}`}
                 >
                   Expenses
                 </button>
                 <button
                   onClick={() => setActiveTab("balances")}
-                  className={`min-w-[120px] px-6 py-3 rounded-xl font-semibold transition-all duration-200 border ${activeTab === 'balances' ? 'bg-persian text-white shadow-lg' : 'text-charcoal border-saffron hover:bg-saffron/20'}`}
+                  className={`min-w-[120px] px-6 py-3 rounded-xl font-medium transition-colors duration-200 border ${activeTab === 'balances' ? 'bg-primary text-white shadow-lg' : 'text-primary border-primary/40 hover:bg-primary/10 focus:ring-2 focus:ring-primary/30'}`}
                 >
                   Balances
                 </button>
                 <button
                   onClick={() => setActiveTab("dashboard")}
-                  className={`min-w-[120px] px-6 py-3 rounded-xl font-semibold transition-all duration-200 border ${activeTab === 'dashboard' ? 'bg-persian text-white shadow-lg' : 'text-charcoal border-saffron hover:bg-saffron/20'}`}
+                  className={`min-w-[120px] px-6 py-3 rounded-xl font-medium transition-colors duration-200 border ${activeTab === 'dashboard' ? 'bg-primary text-white shadow-lg' : 'text-primary border-primary/40 hover:bg-primary/10 focus:ring-2 focus:ring-primary/30'}`}
                 >
                   Dashboard
                 </button>

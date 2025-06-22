@@ -39,16 +39,16 @@ export const GroupDashboard: React.FC<GroupDashboardProps> = ({
   const isOverBudget = analytics.isOverBudget;
 
   const categoryColors = [
-    "#780000", // primary
-    "#003049", // textdark
-    "#669bbc", // secondary
-    "#c1121f", // accent
-    "#508991", // brandHeader
-    "#F59E0B", // A yellow/orange
-    "#10B981", // A green
-    "#8B5CF6", // A purple
-    "#EC4899", // A pink
-    "#84CC16", // A lime
+    "#2a9d8f", // primary / persian-green
+    "#264653", // charcoal
+    "#f4a261", // secondary / sandy-brown
+    "#e76f51", // accent / burnt-sienna
+    "#e9c46a", // saffron
+    "#10B981", // green accent
+    "#8B5CF6", // purple
+    "#EC4899", // pink
+    "#84CC16", // lime
+    "#3B82F6", // blue
   ];
 
   return (
@@ -149,15 +149,15 @@ export const GroupDashboard: React.FC<GroupDashboardProps> = ({
               className={`p-2 rounded-lg ${isOverBudget ? "bg-primary/20" : "bg-secondary/20"}`}
             >
               {isOverBudget ? (
-                <AlertTriangle className={`w-5 h-5 text-primary`} />
+                <AlertTriangle className={`w-5 h-5 text-accent`} />
               ) : (
-                <Target className={`w-5 h-5 text-secondary`} />
+                <Target className="w-5 h-5 text-primary" />
               )}
             </div>
             <div>
               <div className="text-sm text-textdark/70">Budget Status</div>
               <div
-                className={`text-lg font-semibold ${isOverBudget ? "text-primary" : "text-secondary"}`}
+                className={`text-lg font-semibold ${isOverBudget ? "text-accent" : "text-secondary"}`}
               >
                 {group.budget ? `${budgetPercentage.toFixed(1)}%` : "No Budget"}
               </div>
@@ -295,7 +295,7 @@ export const GroupDashboard: React.FC<GroupDashboardProps> = ({
                       formatCurrency(value as number, group.currency)
                     }
                   />
-                  <Bar dataKey="amount" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="amount" fill="#2a9d8f" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

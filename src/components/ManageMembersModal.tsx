@@ -79,7 +79,7 @@ export const ManageMembersModal: React.FC<ManageMembersModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-surface rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <div className="bg-surface rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto border border-surface/60">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-textdark flex items-center space-x-2">
             <Users className="w-5 h-5" />
@@ -214,7 +214,7 @@ export const ManageMembersModal: React.FC<ManageMembersModalProps> = ({
         <div className="flex space-x-3 pt-6 border-t border-surface/40 mt-6">
           <button
             onClick={onClose}
-            className="flex-1 px-6 py-2.5 border border-surface/60 text-textdark/90 rounded-xl hover:bg-surface/80 transition-colors"
+            className="flex-1 px-6 py-2.5 border border-primary/40 text-primary rounded-xl hover:bg-primary/10 focus:ring-2 focus:ring-primary/30 transition-colors"
           >
             Cancel
           </button>
