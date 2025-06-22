@@ -3,6 +3,21 @@
 @tailwind utilities;
 
 /* Global BillWise theme defaults */
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
-  @apply bg-surface text-charcoal antialiased;
+  @apply bg-surface text-charcoal antialiased m-0 p-0;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }

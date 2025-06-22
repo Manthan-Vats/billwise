@@ -191,10 +191,10 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-surface font-sans">
+    <div className="flex flex-col min-h-screen bg-surface font-sans">
       <Header />
 
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-8 overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
