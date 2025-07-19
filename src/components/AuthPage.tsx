@@ -1,18 +1,24 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calculator, Users, TrendingUp, Shield, Zap, Globe } from 'lucide-react';
+import { Calculator, Users, TrendingUp, Shield, Zap, Globe, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export const AuthPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { signInWithGoogle } = useAuth();
 
   const handleGoogleAuth = async () => {
     try {
+      setError(null);
       await signInWithGoogle();
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Google sign-in error', err);
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred during sign-in';
+      if (errorMessage === 'Supabase not configured') {
+        setError('Authentication is not configured. Please set up Supabase credentials to enable sign-in.');
+      } else {
+        setError(errorMessage);
+      }
     }
   };
 
@@ -118,6 +124,17 @@ export const AuthPage: React.FC = () => {
                 }
               </p>
             </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start space-x-3">
+                <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-red-700">
+                  <p className="font-medium mb-1">Sign-in Error</p>
+                  <p>{error}</p>
+                </div>
+              </div>
+            )}
 
             {/* Google Auth Button */}
             <motion.button
