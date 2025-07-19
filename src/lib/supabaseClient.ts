@@ -18,6 +18,7 @@ const createMockClient = () => {
       signOut: () => Promise.resolve({ error: null }),
       getSession: () => Promise.resolve({ data: { session: null }, error: null }),
       onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+      signInWithOAuth: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
     },
     from: () => ({
       select: () => Promise.resolve({ data: [], error: null }),
