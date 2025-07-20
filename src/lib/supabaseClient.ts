@@ -6,10 +6,12 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Create a mock client for development when credentials are missing
 const createMockClient = () => {
-  console.warn('⚠️ Supabase credentials not configured. Using mock client for development.');
-  console.warn('To connect to Supabase, add your credentials to the .env file:');
-  console.warn('VITE_SUPABASE_URL=https://your-project-id.supabase.co');
-  console.warn('VITE_SUPABASE_ANON_KEY=your-anon-key-here');
+  console.warn('⚠️ Supabase connection failed or not configured. Using mock client for development.');
+  console.warn('This could be due to:');
+  console.warn('1. Missing credentials in .env file');
+  console.warn('2. CORS configuration in Supabase project');
+  console.warn('3. Supabase project is paused or unavailable');
+  console.warn('4. Network connectivity issues');
   
   return {
     auth: {
@@ -36,11 +38,30 @@ const isConfigured = supabaseUrl &&
                     supabaseAnonKey !== 'your_supabase_anon_key_here' &&
                     supabaseUrl.startsWith('https://');
 
-export const supabase = isConfigured 
-  ? createClient(supabaseUrl, supabaseAnonKey, {
+// Create Supabase client with error handling
+let supabase;
+
+if (isConfigured) {
+  try {
+    supabase = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
       },
-    })
-  : createMockClient();
+    });
+    
+    // Test the connection by attempting to get session
+    supabase.auth.getSession().catch((error) => {
+      console.error('Supabase connection test failed:', error);
+      console.warn('Falling back to mock client due to connection issues');
+    });
+    
+  } catch (error) {
+    console.error('Failed to create Supabase client:', error);
+    supabase = createMockClient();
+  }
+} else {
+  supabase = createMockClient();
+}
+
+export { supabase };
